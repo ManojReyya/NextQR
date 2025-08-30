@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextQR - The Ultimate QR Code Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .qr-container {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .qr-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .qr-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+        }
+        
+        .qr-preview > * {
+            margin: auto;
+            display: block !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+        }
+        
+        .share-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .success-message {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        
+        /* Feature icons */
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        /* Stats counter */
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        /* Testimonial cards */
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonial-card::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 60px;
+            color: rgba(102, 126, 234, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Header with improved navigation -->
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-qrcode text-3xl mr-2"></i>
+                    <h1 class="text-2xl font-bold">NextQR</h1>
+                </div>
+                
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-8 items-center">
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Home</a></li>
+                        <li><a href="#features" class="hover:text-gray-200 transition font-medium">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-gray-200 transition font-medium">How It Works</a></li>
+                        <li><a href="#testimonials" class="hover:text-gray-200 transition font-medium">Testimonials</a></li>
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 transition font-medium flex items-center">
+                                QR Types <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a href="logoqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Logo QR</a>
+                                <a href="colorqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Color QR</a>
+                                <a href="dotshapeqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Shape QR</a>
+                                <a href="dotqroverimage.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Image QR</a>
+                                <a href="microqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Micro QR</a>
+                                <a href="rmqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">rMQR</a>
+                                <a href="barcodegen.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcodes</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                
+                <button id="mobile-menu-button" class="md:hidden text-xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden">
+                <ul class="py-4 space-y-3">
+                    <li><a href="#" class="block hover:text-gray-200 transition">Home</a></li>
+                    <li><a href="#features" class="block hover:text-gray-200 transition">Features</a></li>
+                    <li><a href="#how-it-works" class="block hover:text-gray-200 transition">How It Works</a></li>
+                    <li><a href="#testimonials" class="block hover:text-gray-200 transition">Testimonials</a></li>
+                    <li class="pt-2">
+                        <span class="text-gray-300 block mb-2">QR Types:</span>
+                        <div class="grid grid-cols-2 gap-2 pl-4">
+                            <a href="logoqr.html" class="block hover:text-gray-200 transition text-sm">Logo QR</a>
+                            <a href="colorqr.html" class="block hover:text-gray-200 transition text-sm">Color QR</a>
+                            <a href="dotshapeqr.html" class="block hover:text-gray-200 transition text-sm">Shape QR</a>
+                            <a href="dotqroverimage.html" class="block hover:text-gray-200 transition text-sm">Image QR</a>
+                            <a href="microqr.html" class="block hover:text-gray-200 transition text-sm">Micro QR</a>
+                            <a href="rmqr.html" class="block hover:text-gray-200 transition text-sm">rMQR</a>
+                            <a href="barcodegen.html" class="block hover:text-gray-200 transition text-sm">Barcodes</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="gradient-bg text-white pt-16 pb-24 md:pt-24 md:pb-32">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-12 md:mb-0 ml-12">       
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        Create Stunning QR Codes <span class="text-indigo-200">in Seconds</span>
+                    </h1>
+                    <p class="text-xl md:text-2xl mb-8 max-w-2xl">
+                        NextQR offers the most advanced QR code generation tools with customization options that make your codes stand out.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#generator" class="bg-white text-indigo-700 font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 inline-block text-center pulse">
+                            Generate QR Code <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                        <a href="#features" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:bg-opacity-10 transition duration-300 inline-block text-center">
+                            Explore Features
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div class="relative w-full max-w-md">
+                        <div class="absolute -top-6 -left-6 w-32 h-32 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-indigo-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"></div>
+                        <div class="relative bg-white p-6 rounded-2xl shadow-2xl">
+                            <div class="flex justify-center mb-4">
+                                <div class="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                </div>
+                            </div>
+                            <div class="text-center">
+                                <h3 class="font-bold text-gray-800 mb-2">Your Custom QR Code</h3>
+                                <p class="text-gray-600 text-sm">Scan me to see the magic!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                <div class="p-4">
+                    <div class="stat-number">10M+</div>
+                    <p class="text-gray-600">QR Codes Generated</p>
+                </div>
+                <div class="p-4">
+                    <div class="stat-number">150+</div>
+                    <p class="text-gray-600">Countries</p>
+                </div>
+                <div class="p-4">
+                    <div class="stat-number">24/7</div>
+                    <p class="text-gray-600">Availability</p>
+                </div>
+                <div class="p-4">
+                    <div class="stat-number">100%</div>
+                    <p class="text-gray-600">Free Forever</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-16">
+        <!-- Generator Section -->
+        <section id="generator" class="mb-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Create Your Custom QR Code</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Generate QR codes for URLs, text, contact info, WiFi credentials and more with our easy-to-use tool.</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-8 qr-container max-w-4xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">QR Code Settings</h3>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Content Type</label>
+                            <div id="content-type-group" class="grid grid-cols-3 gap-2">
+                                <button class="content-type-btn bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-medium" data-type="url">URL</button>
+                                <button class="content-type-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-type="text">Text</button>
+                                <button class="content-type-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-type="contact">Contact</button>
+                                <button class="content-type-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-type="wifi">WiFi</button>
+                                <button class="content-type-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-type="whatsapp">WhatsApp</button>
+                                <button class="content-type-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-type="sms">SMS</button>
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <div id="content-inputs">
+                                <label for="qr-content" class="block text-gray-700 font-medium mb-2">Enter your content</label>
+                                <input id="qr-content" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com or your text...">
+                            </div>
+                        </div>
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-medium mb-2">Error Correction</label>
+                            <div id="ec-level-group" class="grid grid-cols-4 gap-2">
+                                <button class="ec-btn bg-indigo-100 text-indigo-700 px-4 py-2 rounded-lg font-medium" data-level="L">L (7%)</button>
+                                <button class="ec-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-level="M">M (15%)</button>
+                                <button class="ec-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-level="Q">Q (25%)</button>
+                                <button class="ec-btn bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium" data-level="H">H (30%)</button>
+                            </div>
+                            <p class="text-gray-500 text-sm mt-2">Higher correction = more durable but larger QR code</p>
+                        </div>
+                        <div class="mb-6 p-4 rounded-lg bg-indigo-50 flex flex-col md:flex-row md:items-end gap-4">
+                            <div class="flex-1 flex flex-col items-start">
+                                <label class="block text-gray-700 font-medium mb-1" for="qr-fg-color">Foreground Color</label>
+                                <input type="color" id="qr-fg-color" value="#22223b" class="w-16 h-10 p-0 border-0 bg-white rounded shadow cursor-pointer">
+                            </div>
+                            <div class="flex-1 flex flex-col items-start">
+                                <label class="block text-gray-700 font-medium mb-1" for="qr-bg-color">Background Color</label>
+                                <input type="color" id="qr-bg-color" value="#ffffff" class="w-16 h-10 p-0 border-0 bg-white rounded shadow cursor-pointer">
+                            </div>
+                            <div class="flex-1 flex flex-col items-start">
+                                <label class="block text-gray-700 font-medium mb-1" for="qr-shape">QR Shape</label>
+                                <select id="qr-shape" class="w-24 px-2 py-2 border border-gray-300 rounded-lg">
+                                    <option value="square">Square</option>
+                                    <option value="circle">Circle</option>
+                                    <option value="roundsquare">Round Square</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button id="generate-btn" class="bg-indigo-600 text-white px-8 py-3 rounded-lg hover:bg-indigo-700 transition font-semibold flex items-center gap-2 shadow">
+                                <i class="fas fa-bolt"></i> Generate QR Code
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">QR Code Preview</h3>
+                        
+                        <div class="w-full bg-gradient-to-br from-indigo-50 to-purple-100 rounded-xl shadow p-6 mb-6 flex flex-col items-center">
+                            <div id="qr-code" class="qr-preview bg-white p-4 rounded-lg shadow-inner flex items-center justify-center min-h-[250px] mb-4 w-full">
+                                <p class="text-gray-400 text-center w-full">Your QR code will appear here</p>
+                            </div>
+                            
+                            <p id="qr-error" class="text-red-500 text-sm hidden mb-4 text-center">Please enter some text or URL</p>
+                            
+                            <div id="success-message" class="success-message bg-green-50 text-green-700 p-3 rounded-lg mb-4 text-center">
+                                <i class="fas fa-check-circle mr-2"></i> QR code generated successfully!
+                            </div>
+                            
+                            <div id="qr-actions" class="w-full flex flex-col gap-3 hidden">
+                                <button id="download-btn" class="bg-gray-800 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition font-medium flex items-center justify-center">
+                                    <i class="fas fa-download mr-2"></i> Download PNG
+                                </button>
+                                <button id="share-btn" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition font-medium flex items-center justify-center">
+                                    <i class="fas fa-share-alt mr-2"></i> Share QR Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="mb-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Advanced QR Code Features</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">NextQR offers powerful customization options to make your QR codes stand out.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-indigo-100 text-indigo-600">
+                        <i class="fas fa-palette text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Color Customization</h3>
+                    <p class="text-gray-600">Create QR codes in any color combination to match your brand identity and design requirements.</p>
+                    <a href="colorqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Color QR →</a>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-purple-100 text-purple-600">
+                        <i class="fas fa-image text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Logo Integration</h3>
+                    <p class="text-gray-600">Embed your logo in the center of the QR code while maintaining full scanability and functionality.</p>
+                    <a href="logoqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Logo QR →</a>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-blue-100 text-blue-600">
+                        <i class="fas fa-shapes text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Custom Shapes</h3>
+                    <p class="text-gray-600">Design QR codes with circles, diamonds, or other shapes instead of traditional square dots.</p>
+                    <a href="dotshapeqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Shape QR →</a>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-green-100 text-green-600">
+                        <i class="fas fa-camera text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Image Background</h3>
+                    <p class="text-gray-600">Place your QR code over any image background while ensuring it remains scannable.</p>
+                    <a href="dotqroverimage.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Image QR →</a>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-yellow-100 text-yellow-600">
+                        <i class="fas fa-compress-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Micro QR Codes</h3>
+                    <p class="text-gray-600">Generate compact Micro QR codes perfect for small spaces and limited data requirements.</p>
+                    <a href="microqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Micro QR →</a>
+                </div>
+                
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-red-100 text-red-600">
+                        <i class="fas fa-barcode text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Barcode Generator</h3>
+                    <p class="text-gray-600">Create various barcode formats including Code 128, EAN-13, UPC-A, and more for product labeling.</p>
+                    <a href="barcodegen.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Barcode →</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section id="how-it-works" class="mb-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">How NextQR Works</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Creating professional QR codes has never been easier with our simple three-step process.</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-4">
+                        <span class="text-indigo-600 text-3xl font-bold">1</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Enter Your Content</h3>
+                    <p class="text-gray-600 mb-4">Input any URL, text, contact information, WiFi credentials, or other data you want to encode.</p>
+                    <div class="mt-auto w-full max-w-xs">
+                        <div class="bg-gray-100 p-4 rounded-lg">
+                            <div class="flex items-center mb-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500 mr-2"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            </div>
+                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded text-sm" placeholder="https://example.com">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-4">
+                        <span class="text-indigo-600 text-3xl font-bold">2</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Customize Design</h3>
+                    <p class="text-gray-600 mb-4">Choose colors, add a logo, select dot shapes, or apply other design enhancements.</p>
+                    <div class="mt-auto w-full max-w-xs">
+                        <div class="bg-gray-100 p-4 rounded-lg flex justify-center">
+                            <div class="w-32 h-32 bg-white rounded border border-gray-300 flex items-center justify-center">
+                                <i class="fas fa-sliders-h text-gray-400 text-2xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col items-center text-center p-6 bg-white rounded-xl">
+                    <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mb-4">
+                        <span class="text-indigo-600 text-3xl font-bold">3</span>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Download & Use</h3>
+                    <p class="text-gray-600 mb-4">Download your QR code in PNG, SVG, or PDF format and use it anywhere you need.</p>
+                    <div class="mt-auto w-full max-w-xs">
+                        <div class="bg-gray-100 p-4 rounded-lg flex justify-center">
+                            <div class="flex space-x-3">
+                                <button class="bg-white px-4 py-2 rounded border border-gray-300 text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i> PNG
+                                </button>
+                                <button class="bg-white px-4 py-2 rounded border border-gray-300 text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i> SVG
+                                </button>
+                                <button class="bg-white px-4 py-2 rounded border border-gray-300 text-sm font-medium">
+                                    <i class="fas fa-download mr-1"></i> PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section id="testimonials" class="mb-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Trusted by businesses and individuals worldwide for all their QR code needs.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="testimonial-card p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold mr-4">JD</div>
+                        <div>
+                            <h4 class="font-bold">John Doe</h4>
+                            <p class="text-gray-500 text-sm">Marketing Director</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 pl-4">"NextQR has transformed our marketing materials. The ability to add our logo to QR codes while maintaining scanability is a game-changer."</p>
+                </div>
+                
+                <div class="testimonial-card p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold mr-4">AS</div>
+                        <div>
+                            <h4 class="font-bold">Alice Smith</h4>
+                            <p class="text-gray-500 text-sm">Small Business Owner</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 pl-4">"I use NextQR for all my product packaging. The colored QR codes make my products stand out on the shelf and drive more engagement."</p>
+                </div>
+                
+                <div class="testimonial-card p-8">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-4">RJ</div>
+                        <div>
+                            <h4 class="font-bold">Robert Johnson</h4>
+                            <p class="text-gray-500 text-sm">Event Coordinator</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 pl-4">"For our conferences, we use NextQR's shaped QR codes on all materials. They're not just functional but also a design element that attendees love."</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="mb-24">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl font-bold mb-4">Frequently Asked Questions</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Find answers to common questions about QR codes and our generator.</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-white rounded-xl overflow-hidden shadow">
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
+                            <span>What types of QR codes can I create with NextQR?</span>
+                            <i class="fas fa-chevron-down text-indigo-600"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">NextQR supports all standard QR code types including URL, plain text, contact information (vCard), email, SMS, phone numbers, WiFi credentials, and more. We also offer specialized QR codes like Micro QR and rMQR for specific use cases.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
+                            <span>Is there a limit to how many QR codes I can generate?</span>
+                            <i class="fas fa-chevron-down text-indigo-600"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">No, there are no limits! NextQR is completely free to use with no restrictions on the number of QR codes you can generate. All processing happens in your browser, so we don't track or limit your usage.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
+                            <span>How do I ensure my QR code is scannable after customization?</span>
+                            <i class="fas fa-chevron-down text-indigo-600"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">Our generator automatically checks the scanability of your QR code as you customize it. We recommend using higher error correction levels (M or H) when adding logos or colors, maintaining sufficient contrast between dark and light modules, and testing your final QR code with multiple scanning apps.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="border-b border-gray-200">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
+                            <span>What file formats can I download my QR code in?</span>
+                            <i class="fas fa-chevron-down text-indigo-600"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">You can download your QR codes in PNG (raster) format for most uses, or SVG (vector) format for high-quality printing and scaling. Some specialized QR types also support PDF download for professional printing purposes.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
+                            <span>Can I track scans of my QR codes?</span>
+                            <i class="fas fa-chevron-down text-indigo-600"></i>
+                        </button>
+                        <div class="faq-answer px-6 pb-4 hidden">
+                            <p class="text-gray-600">NextQR focuses on static QR code generation. For tracking capabilities, we recommend using a URL shortener service with analytics (like Bitly) before generating your QR code. Simply create a trackable shortened URL first, then generate a QR code for that URL using NextQR.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="gradient-bg text-white rounded-xl p-12 text-center mb-16">
+            <h2 class="text-3xl font-bold mb-6">Ready to Create Amazing QR Codes?</h2>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join over 1 million users who trust NextQR for all their QR code needs.</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#generator" class="bg-white text-indigo-700 font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 inline-block">
+                    Generate QR Code Now <i class="fas fa-qrcode ml-2"></i>
+                </a>
+                <a href="#features" class="border-2 border-white text-white font-semibold px-8 py-4 rounded-full hover:bg-white hover:bg-opacity-10 transition duration-300 inline-block">
+                    Explore All Features
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-qrcode text-2xl mr-2 text-indigo-400"></i>
+                        <h2 class="text-xl font-bold">NextQR</h2>
+                    </div>
+                    <p class="text-gray-400">The most advanced QR code generator on the web. Free forever.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Features</h3>
+                    <ul class="space-y-2">
+                        <li><a href="logoqr.html" class="text-gray-400 hover:text-white transition">Logo QR</a></li>
+                        <li><a href="colorqr.html" class="text-gray-400 hover:text-white transition">Color QR</a></li>
+                        <li><a href="dotshapeqr.html" class="text-gray-400 hover:text-white transition">Shape QR</a></li>
+                        <li><a href="dotqroverimage.html" class="text-gray-400 hover:text-white transition">Image QR</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">API</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    <p>&copy; 2025 NextQR. All rights reserved.</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        mobileMenuButton.addEventListener('click', function() {
+            mobileMenu.classList.toggle('open');
+        });
+        
+        // FAQ accordion
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('i');
+                
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('fa-chevron-down');
+                icon.classList.toggle('fa-chevron-up');
+            });
+        });
+        
+        // QR code generator
+        let selectedType = 'url';
+        let selectedEC = 'L';
+        const contentTypeGroup = document.getElementById('content-type-group');
+        const ecLevelGroup = document.getElementById('ec-level-group');
+        const contentInputs = document.getElementById('content-inputs');
+        const generateBtn = document.getElementById('generate-btn');
+        const qrCodeDiv = document.getElementById('qr-code');
+        const qrError = document.getElementById('qr-error');
+        const successMessage = document.getElementById('success-message');
+        const qrActions = document.getElementById('qr-actions');
+        let qrContent = document.getElementById('qr-content');
+
+        // Content type switching
+        contentTypeGroup.querySelectorAll('.content-type-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                contentTypeGroup.querySelectorAll('.content-type-btn').forEach(b => {
+                    b.classList.remove('bg-indigo-100', 'text-indigo-700');
+                    b.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                this.classList.add('bg-indigo-100', 'text-indigo-700');
+                this.classList.remove('bg-gray-100', 'text-gray-700');
+                selectedType = this.getAttribute('data-type');
+                // Change input fields
+                let html = '';
+                if(selectedType === 'url') {
+                    html = `<label for="qr-content" class="block text-gray-700 font-medium mb-2">Enter your URL</label><input id="qr-content" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="https://example.com">`;
+                } else if(selectedType === 'text') {
+                    html = `<label for="qr-content" class="block text-gray-700 font-medium mb-2">Enter your text</label><input id="qr-content" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" placeholder="Your text here">`;
+                } else if(selectedType === 'contact') {
+                    html = `<label class="block text-gray-700 font-medium mb-2">Contact Info (vCard)</label><input id="contact-name" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="Name"><input id="contact-phone" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="Phone"><input id="contact-email" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Email">`;
+                } else if(selectedType === 'wifi') {
+                    html = `<label class="block text-gray-700 font-medium mb-2">WiFi Credentials</label><input id="wifi-ssid" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="SSID"><input id="wifi-password" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="Password"><select id="wifi-encryption" class="w-full px-4 py-3 border border-gray-300 rounded-lg"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">None</option></select>`;
+                } else if(selectedType === 'whatsapp') {
+                    html = `<label class="block text-gray-700 font-medium mb-2">WhatsApp Message</label><input id="wa-phone" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="Phone (with country code)"><input id="wa-message" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Message">`;
+                } else if(selectedType === 'sms') {
+                    html = `<label class="block text-gray-700 font-medium mb-2">SMS Message</label><input id="sms-phone" class="w-full mb-2 px-4 py-3 border border-gray-300 rounded-lg" placeholder="Phone"><input id="sms-message" class="w-full px-4 py-3 border border-gray-300 rounded-lg" placeholder="Message">`;
+                }
+                contentInputs.innerHTML = html;
+                qrContent = document.getElementById('qr-content') || document.getElementById('contact-name') || document.getElementById('wifi-ssid') || document.getElementById('wa-phone') || document.getElementById('sms-phone');
+            });
+        });
+
+        // Error correction switching
+        ecLevelGroup.querySelectorAll('.ec-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                ecLevelGroup.querySelectorAll('.ec-btn').forEach(b => {
+                    b.classList.remove('bg-indigo-100', 'text-indigo-700');
+                    b.classList.add('bg-gray-100', 'text-gray-700');
+                });
+                this.classList.add('bg-indigo-100', 'text-indigo-700');
+                this.classList.remove('bg-gray-100', 'text-gray-700');
+                selectedEC = this.getAttribute('data-level');
+            });
+        });
+
+        // Generate QR code
+        generateBtn.addEventListener('click', function() {
+            let content = '';
+            if(selectedType === 'url') {
+                content = document.getElementById('qr-content').value.trim();
+            } else if(selectedType === 'text') {
+                content = document.getElementById('qr-content').value.trim();
+            } else if(selectedType === 'contact') {
+                const name = document.getElementById('contact-name').value.trim();
+                const phone = document.getElementById('contact-phone').value.trim();
+                const email = document.getElementById('contact-email').value.trim();
+                content = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+            } else if(selectedType === 'wifi') {
+                const ssid = document.getElementById('wifi-ssid').value.trim();
+                const pass = document.getElementById('wifi-password').value.trim();
+                const enc = document.getElementById('wifi-encryption').value;
+                content = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
+            } else if(selectedType === 'whatsapp') {
+                const phone = document.getElementById('wa-phone').value.trim();
+                const msg = encodeURIComponent(document.getElementById('wa-message').value.trim());
+                content = `https://wa.me/${phone}?text=${msg}`;
+            } else if(selectedType === 'sms') {
+                const phone = document.getElementById('sms-phone').value.trim();
+                const msg = encodeURIComponent(document.getElementById('sms-message').value.trim());
+                content = `SMSTO:${phone}:${msg}`;
+            }
+            if (!content || (selectedType === 'contact' && content === 'BEGIN:VCARD\nVERSION:3.0\nFN:\nTEL:\nEMAIL:\nEND:VCARD')) {
+                qrError.classList.remove('hidden');
+                successMessage.classList.remove('show');
+                qrActions.classList.add('hidden');
+                return;
+            }
+            qrError.classList.add('hidden');
+            qrCodeDiv.innerHTML = '';
+            const fgColor = document.getElementById('qr-fg-color').value || '#22223b';
+            const bgColor = document.getElementById('qr-bg-color').value || '#ffffff';
+            const shape = document.getElementById('qr-shape').value || 'square';
+            const qr = qrcode(0, selectedEC);
+            qr.addData(content);
+            qr.make();
+            // Canvas size and cell size
+            const cellSize = 8;
+            const size = qr.getModuleCount() * cellSize;
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            // Fill background
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, size, size);
+            // Draw modules
+            for (let row = 0; row < qr.getModuleCount(); row++) {
+                for (let col = 0; col < qr.getModuleCount(); col++) {
+                    if (qr.isDark(row, col)) {
+                        ctx.fillStyle = fgColor;
+                        if (shape === 'circle') {
+                            ctx.beginPath();
+                            ctx.arc(col * cellSize + cellSize / 2, row * cellSize + cellSize / 2, cellSize / 2, 0, 2 * Math.PI);
+                            ctx.fill();
+                        } else if (shape === 'roundsquare') {
+                            // Draw a rounded square (rect with border radius)
+                            const radius = cellSize * 0.4;
+                            const x = col * cellSize;
+                            const y = row * cellSize;
+                            ctx.beginPath();
+                            ctx.moveTo(x + radius, y);
+                            ctx.lineTo(x + cellSize - radius, y);
+                            ctx.quadraticCurveTo(x + cellSize, y, x + cellSize, y + radius);
+                            ctx.lineTo(x + cellSize, y + cellSize - radius);
+                            ctx.quadraticCurveTo(x + cellSize, y + cellSize, x + cellSize - radius, y + cellSize);
+                            ctx.lineTo(x + radius, y + cellSize);
+                            ctx.quadraticCurveTo(x, y + cellSize, x, y + cellSize - radius);
+                            ctx.lineTo(x, y + radius);
+                            ctx.quadraticCurveTo(x, y, x + radius, y);
+                            ctx.closePath();
+                            ctx.fill();
+                        } else {
+                            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                        }
+                    }
+                }
+            }
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            qrCodeDiv.appendChild(canvas);
+            qrActions.classList.remove('hidden');
+            successMessage.classList.add('show');
+            // Download button
+            document.getElementById('download-btn').onclick = function() {
+                const link = document.createElement('a');
+                link.download = 'qr-code.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            };
+            // Share button
+            document.getElementById('share-btn').onclick = async function() {
+                function dataURLtoBlob(dataurl) {
+                    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                        bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                    while(n--){
+                        u8arr[n] = bstr.charCodeAt(n);
+                    }
+                    return new Blob([u8arr], {type:mime});
+                }
+                const file = new File([
+                    dataURLtoBlob(canvas.toDataURL('image/png'))
+                ], 'qr-code.png', { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'QR Code',
+                            text: 'Scan this QR code!'
+                        });
+                    } catch (err) {
+                        alert('Sharing was cancelled or failed.');
+                    }
+                } else {
+                    alert('Direct image sharing is not supported in this browser. Please download the QR code and share it manually.');
+                }
+            };
+        });
+
+        // Generate QR code on Enter key press for all input fields
+        contentInputs.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateBtn.click();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

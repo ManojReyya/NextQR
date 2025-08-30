@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextQR - Logo QR Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+
+                .qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 250px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+        }
+        .qr-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        /* Ensure QR code (canvas or img) is centered and not stretched */
+        .qr-container > * {
+            margin: auto;
+            display: block !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+        }
+
+        .file-input-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e1;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .file-input-label:hover {
+            border-color: #4f46e5;
+            background-color: #f8fafc;
+        }
+        .file-input-label.dragging {
+            border-color: #4f46e5;
+            background-color: #eef2ff;
+        }
+      
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        .testimonial-card::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 60px;
+            color: rgba(102, 126, 234, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Navbar/Header -->
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-qrcode text-3xl mr-2"></i>
+                    <h1 class="text-2xl font-bold">NextQR</h1>
+                </div>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-8 items-center">
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Home</a></li>
+                        <li><a href="#features" class="hover:text-gray-200 transition font-medium">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-gray-200 transition font-medium">How It Works</a></li>
+                        <li><a href="#testimonials" class="hover:text-gray-200 transition font-medium">Testimonials</a></li>
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 transition font-medium flex items-center">
+                                QR Types <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a href="logoqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Logo QR</a>
+                                <a href="colorqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Color QR</a>
+                                <a href="dotshapeqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Shape QR</a>
+                                <a href="dotqroverimage.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Image QR</a>
+                                <a href="microqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Micro QR</a>
+                                <a href="rmqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">rMQR</a>
+                                <a href="barcodegen.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcodes</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden">
+                <ul class="py-4 space-y-3">
+                    <li><a href="#" class="block hover:text-gray-200 transition">Home</a></li>
+                    <li><a href="#features" class="block hover:text-gray-200 transition">Features</a></li>
+                    <li><a href="#how-it-works" class="block hover:text-gray-200 transition">How It Works</a></li>
+                    <li><a href="#testimonials" class="block hover:text-gray-200 transition">Testimonials</a></li>
+                    <li class="pt-2">
+                        <span class="text-gray-300 block mb-2">QR Types:</span>
+                        <div class="grid grid-cols-2 gap-2 pl-4">
+                            <a href="logoqr.html" class="block hover:text-gray-200 transition text-sm">Logo QR</a>
+                            <a href="colorqr.html" class="block hover:text-gray-200 transition text-sm">Color QR</a>
+                            <a href="dotshapeqr.html" class="block hover:text-gray-200 transition text-sm">Shape QR</a>
+                            <a href="dotqroverimage.html" class="block hover:text-gray-200 transition text-sm">Image QR</a>
+                            <a href="microqr.html" class="block hover:text-gray-200 transition text-sm">Micro QR</a>
+                            <a href="rmqr.html" class="block hover:text-gray-200 transition text-sm">rMQR</a>
+                            <a href="barcodegen.html" class="block hover:text-gray-200 transition text-sm">Barcodes</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+<br><br><br>
+<div class="text-center mb-12">
+    <h2 class="text-4xl font-bold mb-4 bg-gradient-to-r from-indigo-400 to-purple-600 bg-clip-text text-transparent">
+        Logo QR Code Generator
+    </h2>
+    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        Create beautiful QR codes with your logo in the center. Perfect for branding and marketing materials.
+    </p>
+</div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-md overflow-hidden p-6">
+            <div class="md:flex">
+                <!-- Input Section -->
+                <div class="md:w-1/2 p-4">
+                    <div class="mb-6">
+                        <label for="url" class="block text-sm font-medium text-gray-700 mb-1">Destination URL</label>
+                        <input type="url" id="url" placeholder="https://example.com" 
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Logo/Image</label>
+                        <label id="file-input-label" class="file-input-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span class="text-sm text-gray-500 mb-1">Drag & drop your image or click to browse</span>
+                            <span class="text-xs text-gray-400">PNG, JPG, SVG (max 2MB)</span>
+                            <input type="file" id="image-upload" accept="image/*" style="display:block; margin-top:8px;">
+                        </label>
+                    </div>
+
+                    <div class="mb-6">
+                        <button id="generate-qr" class="w-full mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Generate QR</button>
+                    </div>
+
+                   
+
+                    <div class="mb-6">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">QR Code Color & Shape</label>
+                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                            <div class="flex flex-col items-start">
+                                <label for="qr-color" class="text-xs font-medium text-gray-600 mb-1">QR Color</label>
+                                <input type="color" id="qr-color" value="#000000" class="w-10 h-10 border border-gray-300 rounded cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-start">
+                                <label for="qr-bg-color" class="text-xs font-medium text-gray-600 mb-1">Background Color</label>
+                                <input type="color" id="qr-bg-color" value="#ffffff" class="w-10 h-10 border border-gray-300 rounded cursor-pointer">
+                            </div>
+                            <div class="flex flex-col items-start">
+                                <label for="qr-shape" class="text-xs font-medium text-gray-600 mb-1">Shape</label>
+                                <select id="qr-shape" class="px-3 py-2 border border-gray-300 rounded-lg text-sm w-full">
+                                    <option value="dot">Dot</option>
+                                    <option value="square">Square</option>
+                                    <option value="round">Round Square</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div class="md:w-1/2 p-4 flex flex-col items-center justify-center">
+                    <div class="w-full max-w-md mx-auto bg-gradient-to-br from-indigo-50 to-purple-100 rounded-xl shadow p-6 mb-6 flex flex-col items-center">
+                        <h3 class="font-medium text-gray-700 mb-4 text-center">QR Code Preview</h3>
+                        <div id="qr-code" class="qr-preview bg-white p-4 rounded-lg shadow-inner flex items-center justify-center min-h-[250px] mb-4 w-full">
+                            <p id="qr-placeholder" class="text-gray-400 text-center w-full">Your QR code will appear here</p>
+                        </div>
+                        <div id="qr-overlay" class="qr-overlay"></div>
+                        <div id="qr-error" class="text-red-500 text-sm hidden mb-4 text-center">Please enter a valid URL</div>
+                        <div class="flex flex-row gap-3 justify-center mb-2">
+                            <button id="download-btn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition font-medium flex items-center justify-center">
+                                <i class="fas fa-download mr-2"></i> Download
+                            </button>
+                            <button id="share-btn" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition font-medium flex items-center justify-center">
+                                <i class="fas fa-share-alt mr-2"></i> Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+            <!-- Features Section -->
+            <div id="features" class="py-12">
+                <h2 class="text-3xl font-bold text-center mb-12">Why Use Logo QR Codes?</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                        <div class="feature-icon gradient-bg text-white">
+                            <i class="fas fa-bullseye text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Brand Recognition</h3>
+                        <p class="text-gray-600">Incorporate your logo to reinforce brand identity and make your QR codes instantly recognizable.</p>
+                    </div>
+                    <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                        <div class="feature-icon gradient-bg text-white">
+                            <i class="fas fa-chart-line text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Higher Engagement</h3>
+                        <p class="text-gray-600">Branded QR codes get up to 50% more scans than plain ones, increasing your campaign effectiveness.</p>
+                    </div>
+                    <div class="feature-card bg-white p-6 rounded-xl shadow-md">
+                        <div class="feature-icon gradient-bg text-white">
+                            <i class="fas fa-paint-brush text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">Customizable Design</h3>
+                        <p class="text-gray-600">Adjust colors, logo size, and error correction to create the perfect QR code for your needs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How It Works -->
+            <div id="how-it-works" class="py-12 bg-white rounded-xl shadow-lg p-8 mb-12">
+                <h2 class="text-3xl font-bold text-center mb-8">How To Create Your Logo QR Code</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                        <div class="w-16 h-16 gradient-bg text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">1</div>
+                        <h3 class="font-bold mb-2">Enter URL</h3>
+                        <p class="text-gray-600">Paste the website URL or text you want to encode</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 gradient-bg text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">2</div>
+                        <h3 class="font-bold mb-2">Upload Logo</h3>
+                        <p class="text-gray-600">Select your logo image file (PNG recommended)</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 gradient-bg text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">3</div>
+                        <h3 class="font-bold mb-2">Customize</h3>
+                        <p class="text-gray-600">Adjust colors, logo size and error correction</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-16 h-16 gradient-bg text-white rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold">4</div>
+                        <h3 class="font-bold mb-2">Download</h3>
+                        <p class="text-gray-600">Save your QR code as PNG or SVG and use it anywhere</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials -->
+            <div id="testimonials" class="py-12">
+                <h2 class="text-3xl font-bold text-center mb-12">What Our Users Say</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="testimonial-card p-8">
+                        <div class="flex items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/women/43.jpg" alt="User" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-bold">Sarah Johnson</h4>
+                                <p class="text-gray-500 text-sm">Marketing Director</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">"The logo QR codes have transformed our product packaging. The scan rates increased by 40% compared to standard QR codes. Easy to use and professional results!"</p>
+                    </div>
+                    <div class="testimonial-card p-8">
+                        <div class="flex items-center mb-4">
+                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <h4 class="font-bold">Michael Chen</h4>
+                                <p class="text-gray-500 text-sm">Small Business Owner</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700">"As a small business, branding is everything. This tool lets me create professional QR codes with my logo for free. The customization options are perfect for my needs."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-qrcode text-2xl mr-2 text-indigo-400"></i>
+                        <h2 class="text-xl font-bold">NextQR</h2>
+                    </div>
+                    <p class="text-gray-400">The most advanced QR code generator on the web. Free forever.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Features</h3>
+                    <ul class="space-y-2">
+                        <li><a href="logoqr.html" class="text-gray-400 hover:text-white transition">Logo QR</a></li>
+                        <li><a href="colorqr.html" class="text-gray-400 hover:text-white transition">Color QR</a></li>
+                        <li><a href="dotshapeqr.html" class="text-gray-400 hover:text-white transition">Shape QR</a></li>
+                        <li><a href="dotqroverimage.html" class="text-gray-400 hover:text-white transition">Image QR</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">API</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    <p>&copy; 2025 NextQR. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+  <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrShapeInput = document.getElementById('qr-shape');
+            // DOM Elements
+            const urlInput = document.getElementById('url');
+            const fileInput = document.getElementById('image-upload');
+            const fileInputLabel = document.getElementById('file-input-label');
+            const qrColorInput = document.getElementById('qr-color');
+            const qrBgColorInput = document.getElementById('qr-bg-color');
+            const qrColorHex = document.getElementById('qr-color-hex');
+            const qrBgColorHex = document.getElementById('qr-bg-color-hex');
+            const qrCodeContainer = document.getElementById('qr-code');
+            const qrOverlay = document.getElementById('qr-overlay');
+            const downloadBtn = document.getElementById('download-btn');
+            const shareBtn = document.getElementById('share-btn');
+            const generateQRBtn = document.getElementById('generate-qr');
+
+            // State
+            let currentUrl = 'https://nextor.example';
+            let currentImage = null;
+            let currentImageSize = 25;
+            let currentQrColor = '#000000';
+            let currentQrBgColor = '#ffffff';
+            let currentQrShape = 'dot';
+
+
+            // Only generate QR when button is clicked
+            generateQRBtn.addEventListener('click', function() {
+                updateQRCode();
+            });
+
+            // Event Listeners
+
+            urlInput.addEventListener('input', function() {
+                currentUrl = this.value || 'https://nextor.example';
+                // Do not auto-generate QR here
+                // Restore placeholder if QR is cleared
+                if (!this.value) {
+                    qrCodeContainer.innerHTML = '<p id="qr-placeholder" class="text-gray-400 text-center w-full">Your QR code will appear here</p>';
+                    qrOverlay.innerHTML = '';
+                }
+            });
+
+
+            fileInput.addEventListener('change', function() {
+                // Only update image, do not auto-generate QR
+                handleFileUpload(false);
+            });
+            
+            // Drag and drop events
+            fileInputLabel.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragging');
+            });
+            
+            fileInputLabel.addEventListener('dragleave', function() {
+                this.classList.remove('dragging');
+            });
+            
+            fileInputLabel.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragging');
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+
+
+            qrColorInput.addEventListener('input', function() {
+                currentQrColor = this.value;
+                qrColorHex.textContent = this.value;
+            });
+
+            qrShapeInput.addEventListener('change', function() {
+                currentQrShape = this.value;
+            });
+
+
+            qrBgColorInput.addEventListener('input', function() {
+                currentQrBgColor = this.value;
+                qrBgColorHex.textContent = this.value;
+            });
+
+
+            // Download button logic (PNG)
+            if (downloadBtn) {
+                downloadBtn.onclick = function() {
+                    // Use html2canvas to capture the QR preview area (including logo overlay)
+                    html2canvas(qrCodeContainer, {
+                        backgroundColor: null, // keep transparent if needed
+                        useCORS: true,
+                        scale: 6 // Higher scale for sharper download
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        link.download = 'qr-code.png';
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                    }).catch(() => {
+                        alert('Failed to capture QR code for download.');
+                    });
+                };
+            }
+
+            // Share button logic (Web Share API)
+            if (shareBtn) {
+                shareBtn.onclick = async function() {
+                    // Use html2canvas to capture the QR preview area (including logo overlay)
+                    html2canvas(qrCodeContainer, {
+                        backgroundColor: null,
+                        useCORS: true,
+                        scale: 4
+                    }).then(async (canvas) => {
+                        const dataUrl = canvas.toDataURL('image/png');
+                        // Convert base64 image to Blob
+                        function dataURLtoBlob(dataurl) {
+                            var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+                                bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+                            while(n--){
+                                u8arr[n] = bstr.charCodeAt(n);
+                            }
+                            return new Blob([u8arr], {type:mime});
+                        }
+                        const file = new File([
+                            dataURLtoBlob(dataUrl)
+                        ], 'qr-code.png', { type: 'image/png' });
+
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            try {
+                                await navigator.share({
+                                    files: [file],
+                                    title: 'QR Code',
+                                    text: 'Scan this QR code!'
+                                });
+                            } catch (err) {
+                                alert('Sharing was cancelled or failed.');
+                            }
+                        } else {
+                            alert('Direct image sharing is not supported in this browser. Please download the QR code and share it manually.');
+                        }
+                    }).catch(() => {
+                        alert('Failed to capture QR code for sharing.');
+                    });
+                };
+            }
+
+            // Functions
+            function handleFileUpload(autoGenerate = false) {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                // Check file size (max 2MB)
+                if (file.size > 2 * 1024 * 1024) {
+                    alert('File size exceeds 2MB limit. Please choose a smaller file.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImage = e.target.result;
+                    // Only auto-generate QR if requested (never in this UI)
+                    if (autoGenerate) {
+                        updateQRCode();
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function updateQRCode() {
+
+                // Clear previous QR code and placeholder
+                qrCodeContainer.innerHTML = '';
+                qrOverlay.innerHTML = '';
+
+
+                // Only generate QR if URL is present
+                if (!currentUrl || currentUrl === 'https://nextor.example') {
+                    qrCodeContainer.innerHTML = '<p id="qr-placeholder" class="text-gray-400 text-center w-full">Your QR code will appear here</p>';
+                    return;
+                }
+
+                // Use qr-code-styling for custom shapes
+                let dotType = 'dots';
+                if (currentQrShape === 'square') dotType = 'square';
+                if (currentQrShape === 'round') dotType = 'rounded';
+
+                // Remove old QR instance if any
+                if (window.qrCodeStylingInstance) {
+                    window.qrCodeStylingInstance = null;
+                }
+
+                // Render at high resolution for clarity
+                const qrSize = 800; // High-res canvas
+                window.qrCodeStylingInstance = new QRCodeStyling({
+                    width: qrSize,
+                    height: qrSize,
+                    data: currentUrl,
+                    image: currentImage || undefined,
+                    imageOptions: {
+                        crossOrigin: 'anonymous',
+                        hideBackgroundDots: false,
+                        imageSize: currentImage ? 0.30 : 0.30, // Slightly larger logo for clarity
+                        margin: 0
+                    },
+                    dotsOptions: {
+                        color: currentQrColor,
+                        type: dotType
+                    },
+                    backgroundOptions: {
+                        color: currentQrBgColor
+                    },
+                    qrOptions: {
+                        errorCorrectionLevel: 'H'
+                    }
+                });
+                window.qrCodeStylingInstance.append(qrCodeContainer);
+
+                // Scale down for display only (CSS)
+                const qrCanvas = qrCodeContainer.querySelector('canvas');
+                if (qrCanvas) {
+                    qrCanvas.style.width = '320px';
+                    qrCanvas.style.height = '320px';
+                }
+            }
+
+            function downloadQRAsPNG() {
+                const qrContainer = document.getElementById('qr-preview-container');
+                
+                html2canvas(qrContainer, {
+                    scale: 2,
+                    backgroundColor: currentQrBgColor
+                }).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'nextor-qr-code.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            }
+
+            function downloadQRAsSVG() {
+                const qrSvg = document.querySelector('#qr-code svg');
+                if (!qrSvg) return;
+
+                // Clone the SVG to avoid modifying the original
+                const svgClone = qrSvg.cloneNode(true);
+                
+                // If there's an image overlay, add it to the SVG
+                if (currentImage) {
+                    const overlayImg = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+                    overlayImg.setAttributeNS('http://www.w3.org/1999/xlink', 'href', currentImage);
+                    
+                    // Calculate position and size
+                    const svgSize = 200;
+                    const imgSize = svgSize * (currentImageSize / 100);
+                    const imgX = (svgSize - imgSize) / 2;
+                    const imgY = (svgSize - imgSize) / 2;
+                    
+                    overlayImg.setAttribute('x', imgX);
+                    overlayImg.setAttribute('y', imgY);
+                    overlayImg.setAttribute('width', imgSize);
+                    overlayImg.setAttribute('height', imgSize);
+                    overlayImg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                    
+                    svgClone.appendChild(overlayImg);
+                }
+
+                const serializer = new XMLSerializer();
+                const svgStr = serializer.serializeToString(svgClone);
+                
+                const blob = new Blob([svgStr], {type: 'image/svg+xml'});
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.download = 'nextor-qr-code.svg';
+                link.href = url;
+                link.click();
+                
+                // Clean up
+                URL.revokeObjectURL(url);
+            }
+
+            function shareViaWhatsApp() {
+                const text = `Check out this QR code I created with NextOr: ${currentUrl}`;
+                const encodedText = encodeURIComponent(text);
+                const url = `https://wa.me/?text=${encodedText}`;
+                window.open(url, '_blank');
+            }
+
+            function shareViaEmail() {
+                const subject = 'Check out this QR code I created with NextOr';
+                const body = `I created this QR code using NextOr. It links to: ${currentUrl}\n\nYou can create your own branded QR codes at https://nextor.example`;
+                const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
+            }
+        });
+    </script>
+</body>
+</html>
