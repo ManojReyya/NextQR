@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextQR - rMQR Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+     <script src="bwip-js-min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .qr-container {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .qr-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .feature-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        .qr-preview {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            background: #fff;
+            overflow: hidden;
+        }
+        .qr-preview > * {
+            margin: auto;
+            display: block !important;
+            position: relative !important;
+            top: auto !important;
+            left: auto !important;
+            transform: none !important;
+        }
+        .share-btn { transition: all 0.2s ease; }
+        .share-btn:hover { transform: translateY(-2px); }
+        .success-message {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .success-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .testimonial-card {
+            background: white;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        .testimonial-card::before {
+            content: "";
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 60px;
+            color: rgba(102, 126, 234, 0.1);
+            font-family: serif;
+            line-height: 1;
+        }
+        .rmqr-generator {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .rmqr-generator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+        .rmqr-canvas-container {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px dashed #cbd5e1;
+        }
+        .version-info {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Navbar/Header -->
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-qrcode text-3xl mr-2"></i>
+                    <h1 class="text-2xl font-bold">NextQR</h1>
+                </div>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-8 items-center">
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Home</a></li>
+                        <li><a href="#features" class="hover:text-gray-200 transition font-medium">Features</a></li>
+                        <li><a href="#how-it-works" class="hover:text-gray-200 transition font-medium">How It Works</a></li>
+                        <li><a href="#testimonials" class="hover:text-gray-200 transition font-medium">Testimonials</a></li>
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 transition font-medium flex items-center">
+                                QR Types <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a href="logoqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Logo QR</a>
+                                <a href="colorqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Color QR</a>
+                                <a href="dotshapeqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Shape QR</a>
+                                <a href="dotqroverimage.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Image QR</a>
+                                <a href="microqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Micro QR</a>
+                                <a href="rmqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">rMQR</a>
+                                <a href="barcodegen.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcodes</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden">
+                <ul class="py-4 space-y-3">
+                    <li><a href="#" class="block hover:text-gray-200 transition">Home</a></li>
+                    <li><a href="#features" class="block hover:text-gray-200 transition">Features</a></li>
+                    <li><a href="#how-it-works" class="block hover:text-gray-200 transition">How It Works</a></li>
+                    <li><a href="#testimonials" class="block hover:text-gray-200 transition">Testimonials</a></li>
+                    <li class="pt-2">
+                        <span class="text-gray-300 block mb-2">QR Types:</span>
+                        <div class="grid grid-cols-2 gap-2 pl-4">
+                            <a href="logoqr.html" class="block hover:text-gray-200 transition text-sm">Logo QR</a>
+                            <a href="colorqr.html" class="block hover:text-gray-200 transition text-sm">Color QR</a>
+                            <a href="dotshapeqr.html" class="block hover:text-gray-200 transition text-sm">Shape QR</a>
+                            <a href="dotqroverimage.html" class="block hover:text-gray-200 transition text-sm">Image QR</a>
+                            <a href="microqr.html" class="block hover:text-gray-200 transition text-sm">Micro QR</a>
+                            <a href="rmqr.html" class="block hover:text-gray-200 transition text-sm">rMQR</a>
+                            <a href="barcodegen.html" class="block hover:text-gray-200 transition text-sm">Barcodes</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">Rectangular Micro QR (rMQR) Generator</h1>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Create space-efficient rectangular micro QR codes perfect for small packaging, narrow spaces, and industrial applications.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- Generator Form -->
+                <div class="rmqr-generator p-8">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Generate rMQR Code</h2>
+                        <p class="text-gray-600">Fill in the details below to create your custom rMQR code.</p>
+                    </div>
+
+                    <form id="rmqrForm">
+                        <div class="mb-6">
+                            <label for="qrText" class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-pencil-alt mr-2 text-indigo-500"></i> Content to encode
+                            </label>
+                            <input id="qrText" type="text" placeholder="e.g., PRODUCT-92837, https://example.com" 
+                                class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="qrVersion" class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-expand-arrows-alt mr-2 text-indigo-500"></i> rMQR Version
+                            </label>
+                            <select id="qrVersion" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
+                                <option value="R7x43">R7×43 (Smallest)</option>
+                                <option value="R11x77">R11×77 (Medium)</option>
+                                <option value="R17x139" selected>R17×139 (Maximum Capacity)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-6 version-info p-4 rounded-lg">
+                            <h3 class="font-medium text-gray-800 mb-2"><i class="fas fa-info-circle mr-2 text-indigo-600"></i> Version Information</h3>
+                            <p class="text-sm text-gray-600">
+                                <span id="versionDetails">R17×139: Up to 361 numeric or 219 alphanumeric characters</span>
+                            </p>
+                        </div>
+
+                        <button type="button" onclick="generateRMQR()" 
+                            class="w-full gradient-bg text-white py-4 rounded-lg hover:opacity-90 transition flex items-center justify-center">
+                            <i class="fas fa-qrcode mr-2"></i> Generate rMQR Code
+                        </button>
+                    </form>
+                </div>
+
+                <!-- QR Preview -->
+                <div class="rmqr-generator p-8 flex flex-col">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-2">Your rMQR Code</h2>
+                        <p class="text-gray-600">Scan the code below to test it.</p>
+                    </div>
+
+                    <div class="rmqr-canvas-container flex-grow flex items-center justify-center mb-6">
+                        <canvas id="qrCanvas" class="max-w-full"></canvas>
+                    </div>
+
+                    <div id="successMessage" class="success-message text-center mb-6">
+                        <div class="inline-flex items-center bg-green-100 text-green-800 py-2 px-4 rounded-lg">
+                            <i class="fas fa-check-circle mr-2"></i> rMQR code generated successfully!
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <button id="downloadBtn" onclick="downloadQR('png')" 
+                            class="hidden bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center">
+                            <i class="fas fa-download mr-2"></i> PNG
+                        </button>
+                        <button id="downloadSvgBtn" onclick="downloadQR('svg')" 
+                            class="hidden bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition flex items-center justify-center">
+                            <i class="fas fa-download mr-2"></i> SVG
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- rMQR Information Section -->
+            <div class="mt-16">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-4">About Rectangular Micro QR Codes</h2>
+                    <p class="text-lg text-gray-600 max-w-3xl mx-auto">
+                        rMQR codes are a new rectangular variant of QR codes designed for space-constrained applications.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 gradient-bg text-white rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-compress text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Space Efficient</h3>
+                        <p class="text-gray-600">Perfect for narrow spaces where traditional QR codes won't fit, with aspect ratios from 1:6 to 1:8.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 gradient-bg text-white rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-industry text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">Industrial Use</h3>
+                        <p class="text-gray-600">Ideal for small product packaging, pharmaceutical labels, and industrial component tracking.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <div class="w-12 h-12 gradient-bg text-white rounded-lg flex items-center justify-center mb-4">
+                            <i class="fas fa-barcode text-xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">ISO Standard</h3>
+                        <p class="text-gray-600">Fully compliant with ISO/IEC 23941:2022 standard for rectangular micro QR codes.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-qrcode text-2xl mr-2 text-indigo-400"></i>
+                        <h2 class="text-xl font-bold">NextQR</h2>
+                    </div>
+                    <p class="text-gray-400">The most advanced QR code generator on the web. Free forever.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Features</h3>
+                    <ul class="space-y-2">
+                        <li><a href="logoqr.html" class="text-gray-400 hover:text-white transition">Logo QR</a></li>
+                        <li><a href="colorqr.html" class="text-gray-400 hover:text-white transition">Color QR</a></li>
+                        <li><a href="dotshapeqr.html" class="text-gray-400 hover:text-white transition">Shape QR</a></li>
+                        <li><a href="dotqroverimage.html" class="text-gray-400 hover:text-white transition">Image QR</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Resources</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Tutorials</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">API</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Help Center</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    <p>&copy; 2025 NextQR. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        });
+
+        // Version information
+        const versionSelect = document.getElementById('qrVersion');
+        const versionDetails = document.getElementById('versionDetails');
+        
+        const versionInfo = {
+            'R7x43': 'R7×43: Up to 21 numeric or 13 alphanumeric characters',
+            'R11x77': 'R11×77: Up to 134 numeric or 81 alphanumeric characters',
+            'R17x139': 'R17×139: Up to 361 numeric or 219 alphanumeric characters'
+        };
+        
+        versionSelect.addEventListener('change', function() {
+            versionDetails.textContent = versionInfo[this.value];
+        });
+
+        // Generate rMQR code
+        function generateRMQR() {
+            const text = document.getElementById("qrText").value.trim();
+            const version = document.getElementById("qrVersion").value;
+            
+            if (!text) {
+                alert("Please enter some text or numbers to encode!");
+                return;
+            }
+            
+            try {
+                // Clear previous QR code
+                const canvas = document.getElementById("qrCanvas");
+                const ctx = canvas.getContext("2d");
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Generate new QR code
+                bwipjs.toCanvas("qrCanvas", {
+                    bcid: "rectangularmicroqrcode",
+                    text: text,
+                    scale: 4,
+                    version: version,
+                    includetext: false,
+                });
+                
+                // Show download buttons
+                document.getElementById("downloadBtn").classList.remove("hidden");
+                document.getElementById("downloadSvgBtn").classList.remove("hidden");
+                
+                // Show success message
+                const successMessage = document.getElementById("successMessage");
+                successMessage.classList.add("show");
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successMessage.classList.remove("show");
+                }, 3000);
+                
+            } catch (e) {
+                alert("Error generating rMQR: " + e);
+                console.error(e);
+            }
+        }
+        
+        // Download QR code
+        function downloadQR(format) {
+            const canvas = document.getElementById("qrCanvas");
+            const text = document.getElementById("qrText").value.trim() || 'rmqr';
+            
+            if (format === 'png') {
+                const link = document.createElement("a");
+                link.href = canvas.toDataURL("image/png");
+                link.download = `${text.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_rmqr.png`;
+                link.click();
+            } else if (format === 'svg') {
+                // Create SVG from canvas
+                const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                svg.setAttribute("width", canvas.width);
+                svg.setAttribute("height", canvas.height);
+                
+                const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+                image.setAttribute("width", canvas.width);
+                image.setAttribute("height", canvas.height);
+                image.setAttribute("href", canvas.toDataURL("image/png"));
+                
+                svg.appendChild(image);
+                
+                const serializer = new XMLSerializer();
+                const svgStr = serializer.serializeToString(svg);
+                
+                const link = document.createElement("a");
+                link.href = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgStr);
+                link.download = `${text.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_rmqr.svg`;
+                link.click();
+            }
+        }
+    </script>
+</body>
+</html>
