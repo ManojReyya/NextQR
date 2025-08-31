@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head> 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NextQR - The Ultimate QR Code Generator</title>
+    <meta name="description" content="NexQR is the ultimate QR code generator. Create, customize, and download QR codes for free. Fast, secure, and easy to use.">
+    <meta name="keywords" content="QR code, generator, NexQR, free QR, create QR code, download QR, QR code maker">
+    <meta name="author" content="NexQR Team">
+        <title>NexQR - The Ultimate QR Code Generator</title>
+        <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
-        body {
+        html, body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .gradient-bg {
@@ -155,29 +160,28 @@
             <div class="flex justify-between items-center">
                 <div class="flex items-center">
                     <i class="fas fa-qrcode text-3xl mr-2"></i>
-                    <h1 class="text-2xl font-bold">NextQR</h1>
+                    <h1 class="text-2xl font-bold">NexQR</h1>
                 </div>
                 
                 <nav class="hidden md:block">
                     <ul class="flex space-x-8 items-center">
-                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Home</a></li>
-                        <li><a href="#features" class="hover:text-gray-200 transition font-medium">Features</a></li>
-                        <li><a href="#how-it-works" class="hover:text-gray-200 transition font-medium">How It Works</a></li>
-                        <li><a href="#testimonials" class="hover:text-gray-200 transition font-medium">Testimonials</a></li>
+                        <li><a href="index.html" class="hover:text-gray-200 transition font-medium">Home</a></li>
+
                         <li class="relative group">
                             <a href="#" class="hover:text-gray-200 transition font-medium flex items-center">
-                                QR Types <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                                Features <i class="fas fa-chevron-down ml-1 text-sm"></i>
                             </a>
-                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                <a href="logoqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Logo QR</a>
-                                <a href="colorqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Color QR</a>
-                                <a href="dotshapeqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Shape QR</a>
-                                <a href="dotqroverimage.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Image QR</a>
-                                <a href="microqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Micro QR</a>
-                                <a href="rmqr.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">rMQR</a>
-                                <a href="barcodegen.html" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcodes</a>
+                            <div class="absolute left-0 mt-2 w-48 gradient-bg rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a href="logoqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Logo QR</a>
+                                <a href="imageqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Image QR</a>
+                                <a href="microqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Micro QR</a>
+                                <a href="rmqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">rMQR</a>
+                                <a href="qrscanner.html"  class="block px-4 py-2 text-white hover:bg-indigo-700">QR Scanner</a>
+                                <a href="barcode.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Barcode</a>
                             </div>
                         </li>
+                        <li><a href="#how-it-works" class="hover:text-gray-200 transition font-medium">How It Works</a></li>
+                        <li><a href="#testimonials" class="hover:text-gray-200 transition font-medium">Testimonials</a></li>
                     </ul>
                 </nav>
                 
@@ -190,21 +194,20 @@
             <div id="mobile-menu" class="mobile-menu md:hidden">
                 <ul class="py-4 space-y-3">
                     <li><a href="#" class="block hover:text-gray-200 transition">Home</a></li>
-                    <li><a href="#features" class="block hover:text-gray-200 transition">Features</a></li>
-                    <li><a href="#how-it-works" class="block hover:text-gray-200 transition">How It Works</a></li>
-                    <li><a href="#testimonials" class="block hover:text-gray-200 transition">Testimonials</a></li>
                     <li class="pt-2">
-                        <span class="text-gray-300 block mb-2">QR Types:</span>
-                        <div class="grid grid-cols-2 gap-2 pl-4">
-                            <a href="logoqr.html" class="block hover:text-gray-200 transition text-sm">Logo QR</a>
-                            <a href="colorqr.html" class="block hover:text-gray-200 transition text-sm">Color QR</a>
-                            <a href="dotshapeqr.html" class="block hover:text-gray-200 transition text-sm">Shape QR</a>
-                            <a href="dotqroverimage.html" class="block hover:text-gray-200 transition text-sm">Image QR</a>
-                            <a href="microqr.html" class="block hover:text-gray-200 transition text-sm">Micro QR</a>
-                            <a href="rmqr.html" class="block hover:text-gray-200 transition text-sm">rMQR</a>
-                            <a href="barcodegen.html" class="block hover:text-gray-200 transition text-sm">Barcodes</a>
+                        <span class="text-gray-300 block mb-2">Features</span>
+                        <div class="grid grid-cols-2 gap-2 pl-4 gradient-bg rounded-md">
+                                <a href="logoqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Logo QR</a>
+                                <a href="imageqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Image QR</a>
+                                <a href="microqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Micro QR</a>
+                                <a href="rmqr.html" class="block px-4 py-2 text-white hover:bg-indigo-700">rMQR</a>
+                                <a href="qrscanner.html"  class="block px-4 py-2 text-white hover:bg-indigo-700">QR Scanner</a>
+                                <a href="barcode.html" class="block px-4 py-2 text-white hover:bg-indigo-700">Barcode</a>
+
                         </div>
                     </li>
+                    <li><a href="#how-it-works" class="block hover:text-gray-200 transition">How It Works</a></li>
+                    <li><a href="#testimonials" class="block hover:text-gray-200 transition">Testimonials</a></li>
                 </ul>
             </div>
         </div>
@@ -219,7 +222,7 @@
                         Create Stunning QR Codes <span class="text-indigo-200">in Seconds</span>
                     </h1>
                     <p class="text-xl md:text-2xl mb-8 max-w-2xl">
-                        NextQR offers the most advanced QR code generation tools with customization options that make your codes stand out.
+                        NexQR offers the most advanced QR code generation tools with customization options that make your codes stand out.
                     </p>
                     <div class="flex flex-col sm:flex-row gap-4">
                         <a href="#generator" class="bg-white text-indigo-700 font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 inline-block text-center pulse">
@@ -237,7 +240,7 @@
                         <div class="relative bg-white p-6 rounded-2xl shadow-2xl">
                             <div class="flex justify-center mb-4">
                                 <div class="w-64 h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-                                    <i class="fas fa-qrcode text-6xl text-gray-400"></i>
+                                    <img src="qr-code.png" alt="QR Code" class="h-50 w-50 object-contain" />
                                 </div>
                             </div>
                             <div class="text-center">
@@ -372,7 +375,7 @@
         <section id="features" class="mb-24">
             <div class="text-center mb-16">
                 <h2 class="text-3xl font-bold mb-4">Advanced QR Code Features</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">NextQR offers powerful customization options to make your QR codes stand out.</p>
+                <p class="text-gray-600 max-w-2xl mx-auto">NexQR offers powerful customization options to make your QR codes stand out.</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -382,7 +385,7 @@
                     </div>
                     <h3 class="text-xl font-bold mb-3">Color Customization</h3>
                     <p class="text-gray-600">Create QR codes in any color combination to match your brand identity and design requirements.</p>
-                    <a href="colorqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Color QR →</a>
+                    <a href="#generator" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Color QR →</a>
                 </div>
                 
                 <div class="bg-white p-8 rounded-xl feature-card">
@@ -400,7 +403,7 @@
                     </div>
                     <h3 class="text-xl font-bold mb-3">Custom Shapes</h3>
                     <p class="text-gray-600">Design QR codes with circles, diamonds, or other shapes instead of traditional square dots.</p>
-                    <a href="dotshapeqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Shape QR →</a>
+                    <a href="#generator" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Shape QR →</a>
                 </div>
                 
                 <div class="bg-white p-8 rounded-xl feature-card">
@@ -409,7 +412,7 @@
                     </div>
                     <h3 class="text-xl font-bold mb-3">Image Background</h3>
                     <p class="text-gray-600">Place your QR code over any image background while ensuring it remains scannable.</p>
-                    <a href="dotqroverimage.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Image QR →</a>
+                    <a href="imageqr.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Image QR →</a>
                 </div>
                 
                 <div class="bg-white p-8 rounded-xl feature-card">
@@ -427,15 +430,36 @@
                     </div>
                     <h3 class="text-xl font-bold mb-3">Barcode Generator</h3>
                     <p class="text-gray-600">Create various barcode formats including Code 128, EAN-13, UPC-A, and more for product labeling.</p>
-                    <a href="barcodegen.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Barcode →</a>
+                    <a href="barcode.html" class="mt-4 inline-block text-indigo-600 font-medium hover:text-indigo-800">Try Barcode →</a>
                 </div>
+
+                <!-- rMQR Generator Feature -->
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-pink-100 text-pink-600">
+                        <i class="fas fa-qrcode text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">rMQR Generator</h3>
+                    <p class="text-gray-600">Generate Rectangular Micro QR (rMQR) codes for compact and flexible applications.</p>
+                    <a href="rmqr.html" class="mt-4 inline-block text-pink-600 font-medium hover:text-pink-800">Try rMQR →</a>
+                </div>
+
+                <!-- QR Scanner Feature -->
+                <div class="bg-white p-8 rounded-xl feature-card">
+                    <div class="feature-icon bg-teal-100 text-teal-600">
+                        <i class="fas fa-camera-retro text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">QR Scanner</h3>
+                    <p class="text-gray-600">Scan QR codes instantly using your device camera, directly in your browser.</p>
+                    <a href="qrscanner.html" class="mt-4 inline-block text-teal-600 font-medium hover:text-teal-800">Try QR Scanner →</a>
+                </div>
+
             </div>
         </section>
 
         <!-- How It Works Section -->
         <section id="how-it-works" class="mb-24">
             <div class="text-center mb-16">
-                <h2 class="text-3xl font-bold mb-4">How NextQR Works</h2>
+                <h2 class="text-3xl font-bold mb-4">How NexQR Works</h2>
                 <p class="text-gray-600 max-w-2xl mx-auto">Creating professional QR codes has never been easier with our simple three-step process.</p>
             </div>
             
@@ -514,7 +538,7 @@
                             <p class="text-gray-500 text-sm">Marketing Director</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 pl-4">"NextQR has transformed our marketing materials. The ability to add our logo to QR codes while maintaining scanability is a game-changer."</p>
+                    <p class="text-gray-700 pl-4">"NexQR has transformed our marketing materials. The ability to add our logo to QR codes while maintaining scanability is a game-changer."</p>
                 </div>
                 
                 <div class="testimonial-card p-8">
@@ -525,7 +549,7 @@
                             <p class="text-gray-500 text-sm">Small Business Owner</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 pl-4">"I use NextQR for all my product packaging. The colored QR codes make my products stand out on the shelf and drive more engagement."</p>
+                    <p class="text-gray-700 pl-4">"I use NexQR for all my product packaging. The colored QR codes make my products stand out on the shelf and drive more engagement."</p>
                 </div>
                 
                 <div class="testimonial-card p-8">
@@ -536,7 +560,7 @@
                             <p class="text-gray-500 text-sm">Event Coordinator</p>
                         </div>
                     </div>
-                    <p class="text-gray-700 pl-4">"For our conferences, we use NextQR's shaped QR codes on all materials. They're not just functional but also a design element that attendees love."</p>
+                    <p class="text-gray-700 pl-4">"For our conferences, we use NexQR's shaped QR codes on all materials. They're not just functional but also a design element that attendees love."</p>
                 </div>
             </div>
         </section>
@@ -552,11 +576,11 @@
                 <div class="bg-white rounded-xl overflow-hidden shadow">
                     <div class="border-b border-gray-200">
                         <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center hover:bg-gray-50">
-                            <span>What types of QR codes can I create with NextQR?</span>
+                            <span>What types of QR codes can I create with NexQR?</span>
                             <i class="fas fa-chevron-down text-indigo-600"></i>
                         </button>
                         <div class="faq-answer px-6 pb-4 hidden">
-                            <p class="text-gray-600">NextQR supports all standard QR code types including URL, plain text, contact information (vCard), email, SMS, phone numbers, WiFi credentials, and more. We also offer specialized QR codes like Micro QR and rMQR for specific use cases.</p>
+                            <p class="text-gray-600">NexQR supports all standard QR code types including URL, plain text, contact information (vCard), email, SMS, phone numbers, WiFi credentials, and more. We also offer specialized QR codes like Micro QR and rMQR for specific use cases.</p>
                         </div>
                     </div>
                     
@@ -566,7 +590,7 @@
                             <i class="fas fa-chevron-down text-indigo-600"></i>
                         </button>
                         <div class="faq-answer px-6 pb-4 hidden">
-                            <p class="text-gray-600">No, there are no limits! NextQR is completely free to use with no restrictions on the number of QR codes you can generate. All processing happens in your browser, so we don't track or limit your usage.</p>
+                            <p class="text-gray-600">No, there are no limits! NexQR is completely free to use with no restrictions on the number of QR codes you can generate. All processing happens in your browser, so we don't track or limit your usage.</p>
                         </div>
                     </div>
                     
@@ -596,7 +620,7 @@
                             <i class="fas fa-chevron-down text-indigo-600"></i>
                         </button>
                         <div class="faq-answer px-6 pb-4 hidden">
-                            <p class="text-gray-600">NextQR focuses on static QR code generation. For tracking capabilities, we recommend using a URL shortener service with analytics (like Bitly) before generating your QR code. Simply create a trackable shortened URL first, then generate a QR code for that URL using NextQR.</p>
+                            <p class="text-gray-600">NexQR focuses on static QR code generation. For tracking capabilities, we recommend using a URL shortener service with analytics (like Bitly) before generating your QR code. Simply create a trackable shortened URL first, then generate a QR code for that URL using NexQR.</p>
                         </div>
                     </div>
                 </div>
@@ -606,7 +630,7 @@
         <!-- CTA Section -->
         <section class="gradient-bg text-white rounded-xl p-12 text-center mb-16">
             <h2 class="text-3xl font-bold mb-6">Ready to Create Amazing QR Codes?</h2>
-            <p class="text-xl mb-8 max-w-2xl mx-auto">Join over 1 million users who trust NextQR for all their QR code needs.</p>
+            <p class="text-xl mb-8 max-w-2xl mx-auto">Join over 1 million users who trust NexQR for all their QR code needs.</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="#generator" class="bg-white text-indigo-700 font-semibold px-8 py-4 rounded-full hover:bg-gray-100 transition duration-300 inline-block">
                     Generate QR Code Now <i class="fas fa-qrcode ml-2"></i>
@@ -625,7 +649,7 @@
                 <div>
                     <div class="flex items-center mb-4">
                         <i class="fas fa-qrcode text-2xl mr-2 text-indigo-400"></i>
-                        <h2 class="text-xl font-bold">NextQR</h2>
+                        <h2 class="text-xl font-bold">NexQR</h2>
                     </div>
                     <p class="text-gray-400">The most advanced QR code generator on the web. Free forever.</p>
                 </div>
@@ -634,9 +658,11 @@
                     <h3 class="text-lg font-bold mb-4">Features</h3>
                     <ul class="space-y-2">
                         <li><a href="logoqr.html" class="text-gray-400 hover:text-white transition">Logo QR</a></li>
-                        <li><a href="colorqr.html" class="text-gray-400 hover:text-white transition">Color QR</a></li>
-                        <li><a href="dotshapeqr.html" class="text-gray-400 hover:text-white transition">Shape QR</a></li>
-                        <li><a href="dotqroverimage.html" class="text-gray-400 hover:text-white transition">Image QR</a></li>
+                        <li><a href="#generator" class="text-gray-400 hover:text-white transition">Color QR</a></li>
+                        <li><a href="#generator" class="text-gray-400 hover:text-white transition">Shape QR</a></li>
+                        <li><a href="imageqr.html" class="text-gray-400 hover:text-white transition">Image QR</a></li>
+                        <li><a href="barcode.html" class="text-gray-400 hover:text-white transition">Barcode</a></li>
+
                     </ul>
                 </div>
                 
@@ -663,7 +689,7 @@
             
             <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
                 <div class="text-gray-400 text-sm mb-4 md:mb-0">
-                    <p>&copy; 2025 NextQR. All rights reserved.</p>
+                    <p>&copy; 2025 NexQR. All rights reserved.</p>
                 </div>
                 
                 <div class="flex space-x-6">
