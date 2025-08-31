@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextQR - Barcode Scanner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/quagga@0.12.1/dist/quagga.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .scanner-container {
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .scanner-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        }
+        #interactive.viewport {
+            position: relative;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+            text-align: center;
+        }
+        #interactive.viewport canvas, video {
+            width: 100%;
+        }
+        #interactive.viewport canvas.drawingBuffer, video.drawingBuffer {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .result-container {
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+        }
+        .result-container.show {
+            max-height: 500px;
+        }
+        .barcode-type-chip {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        .mobile-menu.open {
+            max-height: 500px;
+        }
+        .tab-button {
+            transition: all 0.2s ease;
+        }
+        .tab-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .history-item {
+            transition: all 0.2s ease;
+        }
+        .history-item:hover {
+            transform: translateX(5px);
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+    <!-- Navbar/Header -->
+    <header class="gradient-bg text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <i class="fas fa-qrcode text-3xl mr-2"></i>
+                    <h1 class="text-2xl font-bold">NextQR</h1>
+                </div>
+                <nav class="hidden md:block">
+                    <ul class="flex space-x-8 items-center">
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Home</a></li>
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Generator</a></li>
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">Scanner</a></li>
+                        <li><a href="#" class="hover:text-gray-200 transition font-medium">History</a></li>
+                        <li class="relative group">
+                            <a href="#" class="hover:text-gray-200 transition font-medium flex items-center">
+                                Tools <i class="fas fa-chevron-down ml-1 text-sm"></i>
+                            </a>
+                            <div class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">QR Scanner</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcode Scanner</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">QR Generator</a>
+                                <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-indigo-50">Barcode Generator</a>
+                            </div>
+                        </li>
+                    </ul>
+                </nav>
+                <button id="mobile-menu-button" class="md:hidden text-xl focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            <!-- Mobile menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden">
+                <ul class="py-4 space-y-3">
+                    <li><a href="#" class="block hover:text-gray-200 transition">Home</a></li>
+                    <li><a href="#" class="block hover:text-gray-200 transition">Generator</a></li>
+                    <li><a href="#" class="block hover:text-gray-200 transition">Scanner</a></li>
+                    <li><a href="#" class="block hover:text-gray-200 transition">History</a></li>
+                    <li class="pt-2">
+                        <span class="text-gray-300 block mb-2">Tools:</span>
+                        <div class="grid grid-cols-2 gap-2 pl-4">
+                            <a href="#" class="block hover:text-gray-200 transition text-sm">QR Scanner</a>
+                            <a href="#" class="block hover:text-gray-200 transition text-sm">Barcode Scanner</a>
+                            <a href="#" class="block hover:text-gray-200 transition text-sm">QR Generator</a>
+                            <a href="#" class="block hover:text-gray-200 transition text-sm">Barcode Generator</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">Barcode Scanner</h2>
+                <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                    Scan any barcode instantly with your camera or upload an image. Our scanner supports all major barcode formats.
+                </p>
+            </div>
+
+            <!-- Scanner Tabs -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+                <div class="flex border-b border-gray-200">
+                    <button class="tab-button flex-1 py-4 px-6 text-center font-medium active" data-tab="camera">
+                        <i class="fas fa-camera mr-2"></i> Camera Scan
+                    </button>
+                    <button class="tab-button flex-1 py-4 px-6 text-center font-medium" data-tab="upload">
+                        <i class="fas fa-upload mr-2"></i> Upload Image
+                    </button>
+                    <button class="tab-button flex-1 py-4 px-6 text-center font-medium" data-tab="manual">
+                        <i class="fas fa-keyboard mr-2"></i> Manual Entry
+                    </button>
+                </div>
+
+                <!-- Camera Tab -->
+                <div class="tab-content p-6" id="camera-tab">
+                    <div class="scanner-container bg-gray-50 rounded-lg overflow-hidden">
+                        <div id="interactive" class="viewport"></div>
+                    </div>
+                    <div class="flex justify-center mt-6 space-x-4">
+                        <button id="startButton" class="gradient-bg text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition">
+                            <i class="fas fa-play mr-2"></i> Start Scanning
+                        </button>
+                        <button id="stopButton" class="bg-gray-200 text-gray-800 px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition" disabled>
+                            <i class="fas fa-stop mr-2"></i> Stop
+                        </button>
+                    </div>
+                    <div class="mt-4 text-center text-sm text-gray-500">
+                        <p>Position the barcode in front of your camera to scan automatically</p>
+                    </div>
+                </div>
+
+                <!-- Upload Tab -->
+                <div class="tab-content p-6 hidden" id="upload-tab">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                        <i class="fas fa-image text-5xl text-gray-400 mb-4"></i>
+                        <h3 class="text-xl font-medium mb-2">Upload Barcode Image</h3>
+                        <p class="text-gray-500 mb-6">Drag & drop an image file here, or click to browse</p>
+                        <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        <label for="fileInput" class="gradient-bg text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition inline-block cursor-pointer">
+                            <i class="fas fa-folder-open mr-2"></i> Select Image
+                        </label>
+                    </div>
+                    <div class="mt-6 hidden" id="uploadPreviewContainer">
+                        <h4 class="font-medium mb-2">Image Preview:</h4>
+                        <div class="border rounded-lg overflow-hidden">
+                            <img id="uploadPreview" src="#" alt="Uploaded barcode" class="w-full h-auto max-h-64 object-contain mx-auto">
+                        </div>
+                        <button id="scanUploadButton" class="gradient-bg text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition mt-4">
+                            <i class="fas fa-search mr-2"></i> Scan This Image
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Manual Entry Tab -->
+                <div class="tab-content p-6 hidden" id="manual-tab">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <h3 class="text-lg font-medium mb-4">Enter Barcode Number</h3>
+                        <div class="flex">
+                            <input type="text" id="manualBarcodeInput" class="flex-1 border border-gray-300 rounded-l-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter barcode number...">
+                            <button id="manualSubmitButton" class="gradient-bg text-white px-6 py-3 rounded-r-lg font-medium">
+                                <i class="fas fa-check mr-2"></i> Submit
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">Enter the barcode number manually if you can't scan it</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scan Results -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8 result-container" id="resultContainer">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-barcode mr-2"></i> Scan Result
+                        <span id="barcodeType" class="barcode-type-chip bg-indigo-100 text-indigo-800"></span>
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-500 mb-2">Barcode Number</h4>
+                            <p id="barcodeNumber" class="text-2xl font-mono font-bold break-all"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-500 mb-2">Format</h4>
+                            <p id="barcodeFormat" class="text-xl font-medium"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-medium text-gray-500 mb-2">Date/Time</h4>
+                            <p id="scanTimestamp" class="text-xl"></p>
+                        </div>
+                    </div>
+                    <div class="mt-6">
+                        <h4 class="font-medium text-gray-500 mb-2">Actions</h4>
+                        <div class="flex flex-wrap gap-3">
+                            <button id="copyButton" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                                <i class="fas fa-copy mr-2"></i> Copy
+                            </button>
+                            <button id="searchButton" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                                <i class="fas fa-search mr-2"></i> Search Online
+                            </button>
+                            <button id="saveButton" class="bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-medium hover:bg-gray-300 transition flex items-center">
+                                <i class="fas fa-save mr-2"></i> Save to History
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Scan History -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-history mr-2"></i> Scan History
+                    </h3>
+                </div>
+                <div class="p-6">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Barcode</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- History items will be added here dynamically -->
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-gray-500">No scan history yet</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <i class="fas fa-qrcode text-2xl mr-2 text-indigo-400"></i>
+                        <h2 class="text-xl font-bold">NextQR</h2>
+                    </div>
+                    <p class="text-gray-400">Advanced barcode and QR code tools for everyone.</p>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Scanner</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">QR Scanner</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Barcode Scanner</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Batch Scanning</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">History</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Generator</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">QR Generator</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Barcode Generator</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Custom Designs</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Bulk Generation</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold mb-4">Company</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Contact</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+                <div class="text-gray-400 text-sm mb-4 md:mb-0">
+                    <p>&copy; 2025 NextQR. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-facebook text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-instagram text-xl"></i></a>
+                    <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-github text-xl"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('open');
+        });
+
+        // Tab switching
+        const tabButtons = document.querySelectorAll('.tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Hide all tab contents
+                tabContents.forEach(content => content.classList.add('hidden'));
+                // Show the selected tab content
+                const tabId = button.getAttribute('data-tab') + '-tab';
+                document.getElementById(tabId).classList.remove('hidden');
+                
+                // If switching to camera tab, stop any ongoing scans
+                if (button.getAttribute('data-tab') !== 'camera') {
+                    stopScanner();
+                }
+            });
+        });
+
+        // Barcode scanner functionality
+        let scannerActive = false;
+        const startButton = document.getElementById('startButton');
+        const stopButton = document.getElementById('stopButton');
+        const resultContainer = document.getElementById('resultContainer');
+        
+        function startScanner() {
+            scannerActive = true;
+            startButton.disabled = true;
+            stopButton.disabled = false;
+            
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector('#interactive'),
+                    constraints: {
+                        width: 480,
+                        height: 320,
+                        facingMode: "environment"
+                    },
+                },
+                decoder: {
+                    readers: [
+                        "code_128_reader",
+                        "ean_reader",
+                        "ean_8_reader",
+                        "code_39_reader",
+                        "code_39_vin_reader",
+                        "codabar_reader",
+                        "upc_reader",
+                        "upc_e_reader",
+                        "i2of5_reader"
+                    ],
+                    debug: {
+                        showCanvas: true,
+                        showPatches: true,
+                        showFoundPatches: true,
+                        showSkeleton: true,
+                        showLabels: true,
+                        showPatchLabels: true,
+                        showRemainingPatchLabels: true,
+                        boxFromPatches: {
+                            showTransformed: true,
+                            showTransformedBox: true,
+                            showBB: true
+                        }
+                    }
+                },
+            }, function(err) {
+                if (err) {
+                    console.error(err);
+                    alert("Error initializing scanner: " + err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function(result) {
+                if (!scannerActive) return;
+                
+                const code = result.codeResult.code;
+                const format = result.codeResult.format;
+                
+                console.log("Barcode detected and processed : [" + format + "] " + code);
+                displayResult(code, format);
+                stopScanner();
+            });
+        }
+        
+        function stopScanner() {
+            scannerActive = false;
+            startButton.disabled = false;
+            stopButton.disabled = true;
+            
+            if (Quagga) {
+                Quagga.stop();
+            }
+        }
+        
+        function displayResult(code, format) {
+            document.getElementById('barcodeNumber').textContent = code;
+            document.getElementById('barcodeFormat').textContent = format;
+            document.getElementById('barcodeType').textContent = format.toUpperCase();
+            
+            // Set current date/time
+            const now = new Date();
+            document.getElementById('scanTimestamp').textContent = now.toLocaleString();
+            
+            // Show result container
+            resultContainer.classList.add('show');
+            
+            // Scroll to results
+            setTimeout(() => {
+                resultContainer.scrollIntoView({ behavior: 'smooth' });
+            }, 100);
+        }
+        
+        startButton.addEventListener('click', startScanner);
+        stopButton.addEventListener('click', stopScanner);
+        
+        // File upload functionality
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const uploadPreviewContainer = document.getElementById('uploadPreviewContainer');
+        const scanUploadButton = document.getElementById('scanUploadButton');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(event) {
+                    uploadPreview.src = event.target.result;
+                    uploadPreviewContainer.classList.remove('hidden');
+                };
+                
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        scanUploadButton.addEventListener('click', function() {
+            if (!uploadPreview.src || uploadPreview.src === '#') {
+                alert('Please upload an image first');
+                return;
+            }
+            
+            // In a real app, you would send this to a server for processing
+            // For demo purposes, we'll simulate a scan with a random barcode
+            const formats = ['CODE_128', 'EAN_13', 'UPC_A', 'CODE_39'];
+            const randomFormat = formats[Math.floor(Math.random() * formats.length)];
+            const randomCode = randomFormat === 'EAN_13' ? 
+                '4' + Math.floor(100000000000 + Math.random() * 900000000000).toString().substring(1) :
+                Math.floor(10000000000 + Math.random() * 90000000000).toString();
+            
+            displayResult(randomCode, randomFormat);
+        });
+        
+        // Manual entry functionality
+        const manualBarcodeInput = document.getElementById('manualBarcodeInput');
+        const manualSubmitButton = document.getElementById('manualSubmitButton');
+        
+        manualSubmitButton.addEventListener('click', function() {
+            const code = manualBarcodeInput.value.trim();
+            if (!code) {
+                alert('Please enter a barcode number');
+                return;
+            }
+            
+            // Determine format based on length (simplified for demo)
+            let format;
+            if (code.length === 12) {
+                format = 'UPC_A';
+            } else if (code.length === 13) {
+                format = 'EAN_13';
+            } else {
+                format = 'CODE_128';
+            }
+            
+            displayResult(code, format);
+            manualBarcodeInput.value = '';
+        });
+        
+        // Result actions
+        const copyButton = document.getElementById('copyButton');
+        const searchButton = document.getElementById('searchButton');
+        const saveButton = document.getElementById('saveButton');
+        
+        copyButton.addEventListener('click', function() {
+            const code = document.getElementById('barcodeNumber').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        });
+        
+        searchButton.addEventListener('click', function() {
+            const code = document.getElementById('barcodeNumber').textContent;
+            window.open('https://www.google.com/search?q=' + encodeURIComponent(code), '_blank');
+        });
+        
+        saveButton.addEventListener('click', function() {
+            const code = document.getElementById('barcodeNumber').textContent;
+            const format = document.getElementById('barcodeFormat').textContent;
+            const timestamp = document.getElementById('scanTimestamp').textContent;
+            
+            addToHistory(code, format, timestamp);
+            alert('Saved to history!');
+        });
+        
+        // History functionality
+        function addToHistory(code, format, timestamp) {
+            const historyTableBody = document.getElementById('historyTableBody');
+            
+            // Remove the "no history" message if it exists
+            if (historyTableBody.querySelector('td[colspan="4"]')) {
+                historyTableBody.innerHTML = '';
+            }
+            
+            const newRow = document.createElement('tr');
+            newRow.className = 'history-item';
+            newRow.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap font-mono font-bold">${code}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="barcode-type-chip bg-indigo-100 text-indigo-800">${format.toUpperCase()}</span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">${timestamp}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <button class="text-indigo-600 hover:text-indigo-900 mr-3">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <button class="text-indigo-600 hover:text-indigo-900">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </td>
+            `;
+            
+            historyTableBody.prepend(newRow);
+        }
+    </script>
+</body>
+</html>
