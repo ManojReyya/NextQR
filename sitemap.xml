@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+  <loc>https://nex-qr.netlify.app/</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/barcode.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/imageqr.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/index.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/logoqr.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/microqr.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/qrscanner.html</loc>
+  </url>
+  <url>
+  <loc>https://nex-qr.netlify.app/rmqr.html</loc>
+  </url>
+</urlset>
